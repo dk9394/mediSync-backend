@@ -63,7 +63,7 @@ const loginUser = async (req, res) => {
 		const user = await userModel.findOne({ email });
 
 		if (!user) {
-			return res.status(400).json({ success: false, message: 'User does not exist' });
+			return res.status(400).json({ success: false, message: 'User does not exist', title: 'Error' });
 		}
 
 		const isMatch = await bcrypt.compare(password, user.password);
@@ -72,7 +72,7 @@ const loginUser = async (req, res) => {
 			const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
 			res.status(200).json({ success: true, token });
 		} else {
-			res.status(401).json({ success: false, message: 'Invalid credentials' });
+			res.status(401).json({ success: false, message: 'Invalid credentials', title: 'Error' });
 		}
 	} catch (error) {
 		res.json({ success: false, message: error.message });
