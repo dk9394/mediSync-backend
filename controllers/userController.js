@@ -63,19 +63,18 @@ const loginUser = async (req, res) => {
 		const user = await userModel.findOne({ email });
 
 		if (!user) {
-			return res.json({ success: false, message: 'User does not exist' });
+			return res.status(400).json({ success: false, message: 'User does not exist' });
 		}
 
 		const isMatch = await bcrypt.compare(password, user.password);
 
 		if (isMatch) {
 			const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-			res.json({ success: true, token });
+			res.status(200).json({ success: true, token });
 		} else {
-			res.json({ success: false, message: 'Invalid credentials' });
+			res.status(401).json({ success: false, message: 'Invalid credentials' });
 		}
 	} catch (error) {
-		console.log(error);
 		res.json({ success: false, message: error.message });
 	}
 };
@@ -86,7 +85,7 @@ const getProfile = async (req, res) => {
 		const { userId } = req.body;
 		const userData = await userModel.findById(userId).select('-password');
 
-		res.json({ success: true, userData });
+		res.status(200).json({ success: true, userData });
 	} catch (error) {
 		console.log(error);
 		res.json({ success: false, message: error.message });
