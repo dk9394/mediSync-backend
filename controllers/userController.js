@@ -99,7 +99,9 @@ const updateProfile = async (req, res) => {
 		const imageFile = req.file;
 
 		if (!name || !phone || !dob || !gender) {
-			return res.json({ success: false, message: 'Data Missing' });
+			return res
+				.status(400)
+				.json({ success: false, message: 'Required fields are missing', title: 'Invalid data' });
 		}
 
 		await userModel.findByIdAndUpdate(userId, { name, phone, address: JSON.parse(address), dob, gender });
@@ -112,7 +114,8 @@ const updateProfile = async (req, res) => {
 			await userModel.findByIdAndUpdate(userId, { image: imageURL });
 		}
 
-		res.json({ success: true, message: 'Profile Updated' });
+		const userData = await userModel.findById(userId).select('-password');
+		res.status(200).json({ success: true, message: 'Profile Updated', userData });
 	} catch (error) {
 		console.log(error);
 		res.json({ success: false, message: error.message });
